@@ -41,6 +41,10 @@ jobs:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.CR_PAT }}
-
-      - run: docker build -t ghcr.io/hyacinthbots/allium:latest .
-      - run: docker push ghcr.io/hyacinthbots/allium:latest
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ghcr.io/hyacinthbots/allium:latest
