@@ -11,7 +11,7 @@ gson = "2.10.1"
 doc-gen = "0.1.4"
 kmongo = "4.9.0"
 groovy = "3.0.20"
-ktor = "2.3.9"
+ktor = "2.3.10"
 
 [libraries]
 detekt = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
@@ -30,3 +30,4 @@ doc-gen = { module="org.hyacinthbots:doc-generator", version.ref = "doc-gen" }
 kmongo = { module="org.litote.kmongo:kmongo-coroutine-serialization", version.ref = "kmongo"}
 groovy = { module="org.codehaus.groovy:groovy", version.ref = "groovy" }
 ktor = { module="io.ktor:ktor-client-core", version.ref = "ktor"}
+ktor-cio = { module="io.ktor:ktor-client-cio", version.ref = "ktor"}

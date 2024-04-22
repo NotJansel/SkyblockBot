@@ -36,7 +36,7 @@ fun String.runCommand(
 group = "org.hyacinthbots.allium"
 //version = "0.6.0-build.local-" + "git rev-parse --short=8 HEAD".runCommand(workingDir = rootDir) + "-" + "git branch --show-current".runCommand(workingDir = rootDir).replace("/", ".")
 var buildTime = Date().time / 1000
-version = "0.6.2"
+version = "0.6.3"
 // The current LTS Java version
 val javaVersion = 17
 
@@ -101,6 +101,7 @@ dependencies {
     implementation(libs.doc.gen)
     implementation(libs.kmongo)
     implementation(libs.ktor)
+    implementation(libs.ktor.cio)
 
     // Logging dependencies
     implementation(libs.jansi)
