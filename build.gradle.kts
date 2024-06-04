@@ -148,7 +148,7 @@ tasks {
         Update gradle by changing `gradleVersion` below to the new version,
         then run `./gradlew wrapper` twice to update the scripts properly.
          */
-        gradleVersion = "8.6"
+        gradleVersion = "8.8"
         distributionType = Wrapper.DistributionType.BIN
     }
 }
