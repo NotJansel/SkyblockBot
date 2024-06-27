@@ -40,7 +40,7 @@ class Modrinth : Extension() {
             json(Json { ignoreUnknownKeys = true })
         }
         install(UserAgent) {
-            agent = "hyacinthbots/allium/$BUILD (github@notjansel.de)"
+            agent = "hyacinthbots/allium/$BUILD (contact@jansel.moe)"
         }
     }
 
@@ -106,6 +106,7 @@ class Modrinth : Extension() {
                                     embedProject(response.hits[i])
                                 }
                             }
+                            owner = user
                             timeoutSeconds = 180
                             locale = Locale.ENGLISH
                         }.send()

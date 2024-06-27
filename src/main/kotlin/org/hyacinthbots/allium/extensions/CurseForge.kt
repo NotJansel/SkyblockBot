@@ -32,7 +32,7 @@ class CurseForge : Extension() {
             json(Json { ignoreUnknownKeys = true })
         }
         install(UserAgent) {
-            agent = "hyacinthbots/allium/$BUILD (github@notjansel.de)"
+            agent = "hyacinthbots/allium/$BUILD (contact@jansel.moe)"
         }
     }
 
@@ -61,6 +61,7 @@ class CurseForge : Extension() {
                                     embedProject(response.data[i])
                                 }
                             }
+                            owner = user
                             timeoutSeconds = 180
                             locale = Locale.ENGLISH
                         }.send()
