@@ -28,6 +28,7 @@ import dev.kord.rest.builder.message.EmbedBuilder
 import dev.kord.rest.builder.message.actionRow
 import dev.kord.rest.builder.message.embed
 import io.ktor.client.*
+import io.ktor.client.plugins.*
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
@@ -37,6 +38,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import org.hyacinthbots.allium.database.collections.ConfigCollection
 import org.hyacinthbots.allium.database.collections.LogUploadingCollection
+import org.hyacinthbots.allium.utils.BUILD
 import java.io.ByteArrayInputStream
 import java.io.IOException
 import java.util.zip.GZIPInputStream
@@ -304,7 +306,11 @@ class LogUploading : Extension() {
     data class LogData(val success: Boolean, val id: String? = null, val error: String? = null)
 
     private suspend fun postToMCLogs(text: String): String {
-        val client = HttpClient()
+        val client = HttpClient() {
+            install(UserAgent) {
+                agent = "hyacinthbots/allium/$BUILD (contact@jansel.moe)"
+            }
+        }
         val cleanText = text.replace("\r\n", "\n", true).replace("\r", "\n", true)
         val response = client.post("https://api.mclo.gs/1/log") {
             setBody(
