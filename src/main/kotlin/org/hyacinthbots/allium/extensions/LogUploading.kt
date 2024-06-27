@@ -306,7 +306,7 @@ class LogUploading : Extension() {
     data class LogData(val success: Boolean, val id: String? = null, val error: String? = null)
 
     private suspend fun postToMCLogs(text: String): String {
-        val client = HttpClient() {
+        val client = HttpClient {
             install(UserAgent) {
                 agent = "hyacinthbots/allium/$BUILD (contact@jansel.moe)"
             }
