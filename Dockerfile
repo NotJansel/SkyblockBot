@@ -1,4 +1,4 @@
-FROM azul/zulu-openjdk-alpine:17-latest
+FROM azul/zulu-openjdk-alpine:21-latest
 
 RUN mkdir /bot
 RUN mkdir /data

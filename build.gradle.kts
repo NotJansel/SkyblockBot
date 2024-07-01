@@ -11,7 +11,8 @@ plugins {
     id("com.github.jakemarsden.git-hooks")
     id("com.github.johnrengelman.shadow")
     id("io.gitlab.arturbosch.detekt")
-    id("net.kyori.blossom") version "1.3.1"
+    id("net.kyori.blossom") version "2.1.0"
+    id("net.kyori.indra.git") version "3.1.3"
 }
 
 fun String.runCommand(
@@ -34,15 +35,21 @@ fun String.runCommand(
 
 
 group = "org.hyacinthbots.allium"
-//version = "0.6.0-build.local-" + "git rev-parse --short=8 HEAD".runCommand(workingDir = rootDir) + "-" + "git branch --show-current".runCommand(workingDir = rootDir).replace("/", ".")
+version = "0.7-build.local-" + "git rev-parse --short=8 HEAD".runCommand(workingDir = rootDir) + "-" + "git branch --show-current".runCommand(workingDir = rootDir).replace("/", ".")
 var buildTime = Date().time / 1000
-version = "0.6.4"
+//version = "0.7"
 // The current LTS Java version
-val javaVersion = 17
+val javaVersion = 21
 
-blossom {
-    replaceToken("@version@", version)
-    replaceToken("@buildTime@", buildTime)
+sourceSets {
+    main {
+        blossom {
+            kotlinSources {
+                property("version", project.version.toString())
+                property("buildtime", buildTime.toString())
+            }
+        }
+    }
 }
 
 repositories {
@@ -105,10 +112,10 @@ dependencies {
 
     // Logging dependencies
     implementation(libs.jansi)
-    implementation(libs.logback)
-    // implementation(libs.logback.groovy)
     implementation(libs.logging)
     implementation(libs.groovy)
+    implementation(libs.logback)
+    implementation(libs.logback.groovy)
 }
 
 application {
@@ -121,18 +128,19 @@ gitHooks {
     )
 }
 
+kotlin {
+    sourceSets["main"].apply {
+        kotlin.srcDir("src/main/kotlin")
+    }
+    jvmToolchain(javaVersion)
+    compilerOptions {
+        apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0)
+    }
+}
+
 tasks {
     processResources {
         inputs.property("version", version)
-    }
-
-    withType<KotlinCompile> {
-        kotlinOptions {
-            jvmTarget = javaVersion.toString()
-            languageVersion = "1.9" // The current major revision of Kotlin
-            incremental = true
-            freeCompilerArgs = listOf("-opt-in=kotlin.RequiresOptIn")
-        }
     }
 
     jar {
@@ -151,12 +159,6 @@ tasks {
         gradleVersion = "8.8"
         distributionType = Wrapper.DistributionType.BIN
     }
-}
-
-java {
-    // Current LTS version of Java
-    sourceCompatibility = JavaVersion.toVersion(javaVersion)
-    targetCompatibility = JavaVersion.toVersion(javaVersion)
 }
 
 detekt {

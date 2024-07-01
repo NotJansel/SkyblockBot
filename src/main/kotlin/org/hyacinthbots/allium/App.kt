@@ -6,7 +6,6 @@ import com.kotlindiscord.kord.extensions.ExtensibleBot
 import com.kotlindiscord.kord.extensions.modules.extra.mappings.extMappings
 import dev.kord.gateway.Intent
 import dev.kord.gateway.PrivilegedIntent
-import me.shedaniel.linkie.utils.readText
 import org.hyacinthbots.allium.extensions.*
 import org.hyacinthbots.allium.utils.ENVIRONMENT
 import org.hyacinthbots.allium.utils.TOKEN

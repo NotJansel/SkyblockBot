@@ -58,7 +58,7 @@ class About : Extension() {
                         }
                         field {
                             name = "Build"
-                            value = BUILD
+                            value = BUILD.toString()
                         }
                         field {
                             name = "This build was created on:"

@@ -1,7 +1,7 @@
 package org.hyacinthbots.allium.database
 
 import com.kotlindiscord.kord.extensions.koin.KordExKoinComponent
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.hyacinthbots.allium.database.collections.MetaCollection
 import org.hyacinthbots.allium.database.entities.MetaData
 import org.hyacinthbots.allium.database.migrations.v1
