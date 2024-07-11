@@ -519,7 +519,7 @@ style:
   ExplicitItLambdaParameter:
     active: true
   ExpressionBodySyntax:
-    active: true
+    active: false
     includeLineWrapping: false
   ForbiddenComment:
     active: false

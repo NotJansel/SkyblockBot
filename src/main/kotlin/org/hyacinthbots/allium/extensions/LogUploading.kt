@@ -255,6 +255,27 @@ class LogUploading : Extension() {
                     }
                 }
             }
+            ephemeralSubCommand {
+                name = "list"
+                description = "List all channels that are in the whitelist"
+                check {
+                    anyGuild()
+                    hasPermission(Permission.ManageChannels)
+                }
+                action {
+                    val list = LogUploadingCollection().getWhitelist(this.guild!!.id)
+                    respond {
+                        embed {
+                            title = "Log Uploading Whitelist"
+                            if (list != null) {
+                                for (channel in list) {
+                                    description += "<#$channel>\n"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
         publicSlashCommand {
             name = "log-blacklist"
