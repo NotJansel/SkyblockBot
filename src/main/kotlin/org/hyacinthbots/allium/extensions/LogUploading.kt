@@ -266,12 +266,14 @@ class LogUploading : Extension() {
                     val list = LogUploadingCollection().getWhitelist(this.guild!!.id)
                     respond {
                         embed {
+                            val channelsList = ""
                             title = "Log Uploading Whitelist"
                             if (list != null) {
                                 for (channel in list) {
-                                    description += "<#$channel>\n"
+                                    channelsList += "<#$channel>\n"
                                 }
                             }
+                            description = channelsList
                         }
                     }
                 }
