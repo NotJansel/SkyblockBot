@@ -51,14 +51,18 @@ class LogUploadingCollection : KordExKoinComponent {
     }
 
     suspend fun getWhitelist(guildId: Snowflake): MutableList<Snowflake>? =
-	if (whitelistCollection.findOne(LogUploadingWhitelistData::guildId eq guildId) != null) {
-	    whitelistCollection.findOne(LogUploadingWhitelistData::guildId eq guildId)!!.channels
+        if (whitelistCollection.findOne(LogUploadingWhitelistData::guildId eq guildId) != null) {
+            whitelistCollection.findOne(LogUploadingWhitelistData::guildId eq guildId)!!.channels
         } else {
             null
         }
 
     suspend fun getBlacklist(guildId: Snowflake): MutableList<Snowflake>? =
-	whitelistCollection.findOne(LogUploadingBlacklistData::guildId eq guildId)?.channels
+        if (blacklistCollection.findOne(LogUploadingBlacklistData::guildId eq guildId) != null) {
+            blacklistCollection.findOne(LogUploadingBlacklistData::guildId eq guildId)!!.channels
+        } else {
+            null
+        }
 
     suspend fun removeChannelFromWhitelist(guildId: Snowflake, channelId: Snowflake) {
         val list = whitelistCollection.findOne(LogUploadingWhitelistData::guildId eq guildId)?.channels

@@ -315,6 +315,29 @@ class LogUploading : Extension() {
                     }
                 }
             }
+            ephemeralSubCommand {
+                name = "list"
+                description = "List all channels that are in the blacklist"
+                check {
+                    anyGuild()
+                    hasPermission(Permission.ManageChannels)
+                }
+                action {
+                    val list = LogUploadingCollection().getBlacklist(this.guild!!.id)
+                    respond {
+                        embed {
+                            var channelsList = ""
+                            title = "Log Uploading Blacklist"
+                            if (list != null) {
+                                for (channel in list) {
+                                    channelsList += "<#$channel>\n"
+                                }
+                            }
+                            description = channelsList
+                        }
+                    }
+                }
+            }
         }
     }
 
