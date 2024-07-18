@@ -16,7 +16,6 @@ import org.hyacinthbots.docgenerator.enums.SupportedFileFormat
 import java.util.*
 import kotlin.io.path.Path
 
-var splashes = JsonArray()
 var updatemessages = JsonArray()
 
 @OptIn(PrivilegedIntent::class)
