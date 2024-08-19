@@ -477,7 +477,7 @@ class Modrinth : Extension() {
     data class DirectLicenseData(
         val id: String,
         val name: String,
-        val url: String
+        val url: String?
     )
 
     @Serializable
