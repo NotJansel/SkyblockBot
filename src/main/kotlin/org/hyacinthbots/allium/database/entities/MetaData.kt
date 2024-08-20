@@ -4,6 +4,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class MetaData(
-    val version: Int,
-    val id: String = "meta"
+	val version: Int,
+	val id: String = "meta"
 )

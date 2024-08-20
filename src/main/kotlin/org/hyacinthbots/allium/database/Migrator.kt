@@ -1,6 +1,6 @@
 package org.hyacinthbots.allium.database
 
-import com.kotlindiscord.kord.extensions.koin.KordExKoinComponent
+import dev.kordex.core.koin.KordExKoinComponent
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.hyacinthbots.allium.database.collections.MetaCollection
 import org.hyacinthbots.allium.database.entities.MetaData
@@ -8,52 +8,52 @@ import org.hyacinthbots.allium.database.migrations.v1
 import org.koin.core.component.inject
 
 object Migrator : KordExKoinComponent {
-    private val logger = KotlinLogging.logger("Migrator Logger")
+	private val logger = KotlinLogging.logger("Migrator Logger")
 
-    private val db: Database by inject()
-    private val mainMetaCollection: MetaCollection by inject()
+	private val db: Database by inject()
+	private val mainMetaCollection: MetaCollection by inject()
 
-    suspend fun migrate() {
-        logger.info { "Starting main database migration" }
+	suspend fun migrate() {
+		logger.info { "Starting main database migration" }
 
-        var meta = mainMetaCollection.get()
+		var meta = mainMetaCollection.get()
 
-        if (meta == null) {
-            meta = MetaData(0)
+		if (meta == null) {
+			meta = MetaData(0)
 
-            mainMetaCollection.set(meta)
-        }
+			mainMetaCollection.set(meta)
+		}
 
-        var currentVersion = meta.version
+		var currentVersion = meta.version
 
-        logger.info { "Current main database version: v$currentVersion" }
+		logger.info { "Current main database version: v$currentVersion" }
 
-        while (true) {
-            val nextVersion = currentVersion + 1
+		while (true) {
+			val nextVersion = currentVersion + 1
 
-            @Suppress("TooGenericExceptionCaught", "UseIfInsteadOfWhen")
-            try {
-                when (nextVersion) {
-                    1 -> ::v1
-                    else -> break
-                }(db.mongo)
+			@Suppress("TooGenericExceptionCaught", "UseIfInsteadOfWhen")
+			try {
+				when (nextVersion) {
+					1 -> ::v1
+					else -> break
+				}(db.mongo)
 
-                logger.info { "Migrated database to version $nextVersion." }
-            } catch (t: Throwable) {
-                logger.error(t) { "Failed to migrate database to version $nextVersion." }
+				logger.info { "Migrated database to version $nextVersion." }
+			} catch (t: Throwable) {
+				logger.error(t) { "Failed to migrate database to version $nextVersion." }
 
-                throw t
-            }
+				throw t
+			}
 
-            currentVersion = nextVersion
-        }
+			currentVersion = nextVersion
+		}
 
-        if (currentVersion != meta.version) {
-            meta = meta.copy(version = currentVersion)
+		if (currentVersion != meta.version) {
+			meta = meta.copy(version = currentVersion)
 
-            mainMetaCollection.update(meta)
+			mainMetaCollection.update(meta)
 
-            logger.info { "Finished main database migrations." }
-        }
-    }
+			logger.info { "Finished main database migrations." }
+		}
+	}
 }

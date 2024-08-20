@@ -100,4 +100,8 @@ build/
 # Env vars - don't commit this!
 .env
 
+.kotlin
 .linkie-cache
+
+config/
+data/

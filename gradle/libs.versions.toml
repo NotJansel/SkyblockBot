@@ -2,23 +2,18 @@
 detekt = "1.23.5"  # Note: Plugin versions must be updated in the settings.gradle.kts too
 
 jansi = "2.4.1"
-kord-extensions = "1.9.0-SNAPSHOT"
 kx-ser = "1.7.1"
 logging = "7.0.0"
 gson = "2.11.0"
-doc-gen = "0.1.4"
+doc-gen = "0.2.1-SNAPSHOT"
 kmongo = "4.9.0"
 groovy = "3.0.22"
-ktor = "2.3.12"
-logback = "1.5.6"
+logback = "1.5.7"
 logback-groovy = "1.14.5"
 
 [libraries]
 detekt = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
 jansi = { module = "org.fusesource.jansi:jansi", version.ref = "jansi" }
-kord-extensions-core = { module = "com.kotlindiscord.kord.extensions:kord-extensions", version.ref = "kord-extensions" }
-kord-extensions-mappings = { module = "com.kotlindiscord.kord.extensions:extra-mappings", version.ref = "kord-extensions" }
-kord-extensions-pluralkit = { module = "com.kotlindiscord.kord.extensions:extra-pluralkit", version.ref = "kord-extensions" }
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib" }
 logging = { module = "io.github.oshai:kotlin-logging", version.ref = "logging" }
 logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
@@ -29,5 +24,3 @@ gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 doc-gen = { module="org.hyacinthbots:doc-generator", version.ref = "doc-gen" }
 kmongo = { module="org.litote.kmongo:kmongo-coroutine-serialization", version.ref = "kmongo"}
 groovy = { module="org.codehaus.groovy:groovy", version.ref = "groovy" }
-ktor = { module="io.ktor:ktor-client-core", version.ref = "ktor"}
-ktor-cio = { module="io.ktor:ktor-client-cio", version.ref = "ktor"}
