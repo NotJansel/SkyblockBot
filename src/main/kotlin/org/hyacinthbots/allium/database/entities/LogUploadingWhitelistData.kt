@@ -5,6 +5,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class LogUploadingWhitelistData(
-    val guildId: Snowflake,
-    val channels: MutableList<Snowflake>
+	val guildId: Snowflake,
+	val channels: MutableList<Snowflake>
 )

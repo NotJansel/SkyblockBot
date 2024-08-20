@@ -1,23 +1,23 @@
 package org.hyacinthbots.allium.extensions
 
-import com.kotlindiscord.kord.extensions.extensions.Extension
-import com.kotlindiscord.kord.extensions.utils.scheduling.Scheduler
-import com.kotlindiscord.kord.extensions.utils.scheduling.Task
+import dev.kordex.core.extensions.Extension
+import dev.kordex.core.utils.scheduling.Scheduler
+import dev.kordex.core.utils.scheduling.Task
 import org.hyacinthbots.allium.utils.downloadLatestClientJar
 import kotlin.time.Duration.Companion.hours
 
 class ClientJarUpdater : Extension() {
-    override val name = "ClientJarUpdater"
+	override val name = "ClientJarUpdater"
 
-    private val scheduler = Scheduler()
+	private val scheduler = Scheduler()
 
-    private lateinit var task: Task
+	private lateinit var task: Task
 
-    override suspend fun setup() {
-        task = scheduler.schedule(6.hours, repeat = true, callback = ::updateClientJar)
-    }
+	override suspend fun setup() {
+		task = scheduler.schedule(6.hours, repeat = true, callback = ::updateClientJar)
+	}
 
-    private suspend fun updateClientJar() {
-        downloadLatestClientJar()
-    }
+	private suspend fun updateClientJar() {
+		downloadLatestClientJar()
+	}
 }

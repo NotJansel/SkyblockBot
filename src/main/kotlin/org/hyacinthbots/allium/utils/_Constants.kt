@@ -1,8 +1,8 @@
 package org.hyacinthbots.allium.utils
 
-import com.kotlindiscord.kord.extensions.utils.env
-import com.kotlindiscord.kord.extensions.utils.envOrNull
 import dev.kord.common.entity.Snowflake
+import dev.kordex.core.utils.env
+import dev.kordex.core.utils.envOrNull
 import org.hyacinthbots.allium.internal.BuildInfo
 
 /** Get the test server ID from the env vars or a .env file. */

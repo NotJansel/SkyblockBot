@@ -1,20 +1,5 @@
 package org.hyacinthbots.allium.extensions
 
-import com.kotlindiscord.kord.extensions.DISCORD_PINK
-import com.kotlindiscord.kord.extensions.DISCORD_RED
-import com.kotlindiscord.kord.extensions.checks.anyGuild
-import com.kotlindiscord.kord.extensions.checks.channelFor
-import com.kotlindiscord.kord.extensions.checks.hasPermission
-import com.kotlindiscord.kord.extensions.commands.Arguments
-import com.kotlindiscord.kord.extensions.commands.application.slash.ephemeralSubCommand
-import com.kotlindiscord.kord.extensions.commands.converters.impl.channel
-import com.kotlindiscord.kord.extensions.components.components
-import com.kotlindiscord.kord.extensions.components.ephemeralButton
-import com.kotlindiscord.kord.extensions.extensions.Extension
-import com.kotlindiscord.kord.extensions.extensions.event
-import com.kotlindiscord.kord.extensions.extensions.publicSlashCommand
-import com.kotlindiscord.kord.extensions.utils.download
-import com.kotlindiscord.kord.extensions.utils.isNullOrBot
 import dev.kord.common.entity.ButtonStyle
 import dev.kord.common.entity.Permission
 import dev.kord.core.behavior.channel.createEmbed
@@ -27,6 +12,21 @@ import dev.kord.rest.builder.component.ActionRowBuilder
 import dev.kord.rest.builder.message.EmbedBuilder
 import dev.kord.rest.builder.message.actionRow
 import dev.kord.rest.builder.message.embed
+import dev.kordex.core.DISCORD_PINK
+import dev.kordex.core.DISCORD_RED
+import dev.kordex.core.checks.anyGuild
+import dev.kordex.core.checks.channelFor
+import dev.kordex.core.checks.hasPermission
+import dev.kordex.core.commands.Arguments
+import dev.kordex.core.commands.application.slash.ephemeralSubCommand
+import dev.kordex.core.commands.converters.impl.channel
+import dev.kordex.core.components.components
+import dev.kordex.core.components.ephemeralButton
+import dev.kordex.core.extensions.Extension
+import dev.kordex.core.extensions.event
+import dev.kordex.core.extensions.publicSlashCommand
+import dev.kordex.core.utils.download
+import dev.kordex.core.utils.isNullOrBot
 import io.ktor.client.*
 import io.ktor.client.plugins.*
 import io.ktor.client.request.*
@@ -45,335 +45,335 @@ import java.util.zip.GZIPInputStream
 
 class LogUploading : Extension() {
 
-    override val name = "log-uploading"
+	override val name = "log-uploading"
 
-    /** The file extensions that will be read and decoded by this system. */
-    private val logFileExtensions = setOf("log", "gz", "txt")
+	/** The file extensions that will be read and decoded by this system. */
+	private val logFileExtensions = setOf("log", "gz", "txt")
 
-    override suspend fun setup() {
-        event<MessageCreateEvent> {
-            check {
-                anyGuild()
-                failIf {
-                    event.message.author.isNullOrBot()
-                    event.message.getChannelOrNull() !is MessageChannel
-                }
-                // I hate NullPointerExceptions. This is to prevent a null pointer exception if the message is a Pk one.
-                if (channelFor(event) == null) return@check
-                // botHasChannelPerms(Permissions(Permission.SendMessages, Permission.EmbedLinks))
-                if (ConfigCollection().logUploadingType(event.guildId!!) == "whitelist") {
-                    failIfNot {
-                        LogUploadingCollection().checkIfChannelIsInWhitelist(
-                                event.message.getGuild().id,
-                                event.message.channelId
-                        )
-                    }
-                } else if (ConfigCollection().logUploadingType(event.guildId!!) == "blacklist") {
-                    failIf {
-                        LogUploadingCollection().checkIfChannelIsInBlacklist(
-                                event.message.getGuild().id,
-                                event.message.channelId
-                        )
-                    }
-                }
-            }
-            action {
-                val eventMessage = event.message.asMessageOrNull() // Get the message
-                val uploadChannel = eventMessage.channel.asChannelOrNull()
-                val eventMember = event.member
+	override suspend fun setup() {
+		event<MessageCreateEvent> {
+			check {
+				anyGuild()
+				failIf {
+					event.message.author.isNullOrBot()
+					event.message.getChannelOrNull() !is MessageChannel
+				}
+				// I hate NullPointerExceptions. This is to prevent a null pointer exception if the message is a Pk one.
+				if (channelFor(event) == null) return@check
+				// botHasChannelPerms(Permissions(Permission.SendMessages, Permission.EmbedLinks))
+				if (ConfigCollection().logUploadingType(event.guildId!!) == "whitelist") {
+					failIfNot {
+						LogUploadingCollection().checkIfChannelIsInWhitelist(
+							event.message.getGuild().id,
+							event.message.channelId
+						)
+					}
+				} else if (ConfigCollection().logUploadingType(event.guildId!!) == "blacklist") {
+					failIf {
+						LogUploadingCollection().checkIfChannelIsInBlacklist(
+							event.message.getGuild().id,
+							event.message.channelId
+						)
+					}
+				}
+			}
+			action {
+				val eventMessage = event.message.asMessageOrNull() // Get the message
+				val uploadChannel = eventMessage.channel.asChannelOrNull()
+				val eventMember = event.member
 
-                eventMessage.attachments.forEach { attachment ->
-                    val attachmentFileName = attachment.filename
-                    val attachmentFileExtension = attachmentFileName.substring(
-                        attachmentFileName.lastIndexOf(".") + 1
-                    )
+				eventMessage.attachments.forEach { attachment ->
+					val attachmentFileName = attachment.filename
+					val attachmentFileExtension = attachmentFileName.substring(
+						attachmentFileName.lastIndexOf(".") + 1
+					)
 
-                    if (attachmentFileExtension in logFileExtensions) {
-                        val logBytes = attachment.download()
+					if (attachmentFileExtension in logFileExtensions) {
+						val logBytes = attachment.download()
 
-                        val logContent: String = if (!attachmentFileName.endsWith(".gz")) {
-                            // If the file is not a gz log, we just decode it
-                            logBytes.decodeToString()
-                        } else {
-                            // If the file is a gz log, we convert it to a byte array,
-                            // and unzip it
-                            val bis = ByteArrayInputStream(logBytes)
-                            val gis = GZIPInputStream(bis)
+						val logContent: String = if (!attachmentFileName.endsWith(".gz")) {
+							// If the file is not a gz log, we just decode it
+							logBytes.decodeToString()
+						} else {
+							// If the file is a gz log, we convert it to a byte array,
+							// and unzip it
+							val bis = ByteArrayInputStream(logBytes)
+							val gis = GZIPInputStream(bis)
 
-                            gis.readAllBytes().decodeToString()
-                        }
+							gis.readAllBytes().decodeToString()
+						}
 
-                        // Ask the user to remove NEC to ease the debugging on mobile users and others
-                        val necText = "at Not Enough Crashes"
-                        val indexOfNECText = logContent.indexOf(necText)
-                        if (indexOfNECText != -1) {
-                            uploadChannel?.createEmbed {
-                                title = "Not Enough Crashes detected in logs"
-                                description = "Not Enough Crashes (NEC) is well known to cause issues and often " +
-                                        "makes the debugging process more difficult. " +
-                                        "Please remove NEC, recreate the issue, and resend the relevant files " +
-                                        "(i.e. log or crash report) if the issue persists."
-                                footer {
-                                    text = eventMessage.author?.username ?: ""
-                                }
-                                color = DISCORD_PINK
-                            }
-                        } else {
-                            // Ask the user if they're ok with uploading their log to a paste site
-                            var confirmationMessage: Message? = null
+						// Ask the user to remove NEC to ease the debugging on mobile users and others
+						val necText = "at Not Enough Crashes"
+						val indexOfNECText = logContent.indexOf(necText)
+						if (indexOfNECText != -1) {
+							uploadChannel?.createEmbed {
+								title = "Not Enough Crashes detected in logs"
+								description = "Not Enough Crashes (NEC) is well known to cause issues and often " +
+									"makes the debugging process more difficult. " +
+									"Please remove NEC, recreate the issue, and resend the relevant files " +
+									"(i.e. log or crash report) if the issue persists."
+								footer {
+									text = eventMessage.author?.username ?: ""
+								}
+								color = DISCORD_PINK
+							}
+						} else {
+							// Ask the user if they're ok with uploading their log to a paste site
+							var confirmationMessage: Message? = null
 
-                            confirmationMessage = uploadChannel?.createMessage {
-                                embed(fun EmbedBuilder.() {
-                                    title = "Do you want to upload this file to mclo.gs?"
-                                    description =
-                                            "mclo.gs is a website that allows users to share minecraft logs " +
-                                                    "through public posts.\nIt's easier for the mobile users to view " +
-                                                    "the file on mclo.gs, do you want it to be uploaded?"
-                                    footer {
-                                        text =
-                                                "Uploaded by ${eventMessage.author?.username ?: eventMember?.asUserOrNull()?.username}"
-                                    }
-                                    color = DISCORD_PINK
-                                })
+							confirmationMessage = uploadChannel?.createMessage {
+								embed(fun EmbedBuilder.() {
+									title = "Do you want to upload this file to mclo.gs?"
+									description =
+										"mclo.gs is a website that allows users to share minecraft logs " +
+											"through public posts.\nIt's easier for the mobile users to view " +
+											"the file on mclo.gs, do you want it to be uploaded?"
+									footer {
+										text =
+											"Uploaded by ${eventMessage.author?.username ?: eventMember?.asUserOrNull()?.username}"
+									}
+									color = DISCORD_PINK
+								})
 
-                                components {
-                                    ephemeralButton(row = 0) {
-                                        label = "Yes"
-                                        style = ButtonStyle.Success
+								components {
+									ephemeralButton(row = 0) {
+										label = "Yes"
+										style = ButtonStyle.Success
 
-                                        action {
-                                            // Make sure only the log uploader can confirm this
-                                            if (event.interaction.user.id == eventMember!!.id) {
-                                                // Delete the confirmation and proceed to upload
-                                                confirmationMessage!!.delete()
+										action {
+											// Make sure only the log uploader can confirm this
+											if (event.interaction.user.id == eventMember!!.id) {
+												// Delete the confirmation and proceed to upload
+												confirmationMessage!!.delete()
 
-                                                val uploadMessage = uploadChannel.createEmbed {
-                                                    title = "Uploading `$attachmentFileName` to mclo.gs..."
-                                                    footer {
-                                                        text =
-                                                                "Uploaded by ${eventMessage.author?.username ?: eventMember.asUserOrNull().username}"
-                                                    }
-                                                    timestamp = Clock.System.now()
-                                                    color = DISCORD_PINK
-                                                }
+												val uploadMessage = uploadChannel.createEmbed {
+													title = "Uploading `$attachmentFileName` to mclo.gs..."
+													footer {
+														text =
+															"Uploaded by ${eventMessage.author?.username ?: eventMember.asUserOrNull().username}"
+													}
+													timestamp = Clock.System.now()
+													color = DISCORD_PINK
+												}
 
-                                                try {
-                                                    val response = postToMCLogs(logContent)
+												try {
+													val response = postToMCLogs(logContent)
 
-                                                    uploadMessage.edit {
-                                                        embed {
-                                                            title = "`$attachmentFileName` uploaded to mclo.gs"
-                                                            footer {
-                                                                text =
-                                                                        "Uploaded by ${eventMessage.author?.username ?: eventMember.asUserOrNull().username}"
-                                                            }
-                                                            timestamp = Clock.System.now()
-                                                            color = DISCORD_PINK
-                                                        }
+													uploadMessage.edit {
+														embed {
+															title = "`$attachmentFileName` uploaded to mclo.gs"
+															footer {
+																text =
+																	"Uploaded by ${eventMessage.author?.username ?: eventMember.asUserOrNull().username}"
+															}
+															timestamp = Clock.System.now()
+															color = DISCORD_PINK
+														}
 
-                                                        actionRow(fun ActionRowBuilder.() {
-                                                            linkButton(response) {
-                                                                label = "Click here to view"
-                                                            }
-                                                        })
-                                                    }
-                                                } catch (e: IOException) {
-                                                    // If the upload fails, we'll just show the error
-                                                    uploadMessage.edit {
-                                                        embed {
-                                                            title =
-                                                                    "Failed to upload `$attachmentFileName` to mclo.gs"
-                                                            description = "Error: $e"
-                                                            footer {
-                                                                text =
-                                                                        "Uploaded by ${eventMessage.author?.username ?: eventMember.asUserOrNull().username}"
-                                                            }
-                                                            timestamp = Clock.System.now()
-                                                            color = DISCORD_RED
-                                                        }
-                                                    }
-                                                    e.printStackTrace()
-                                                }
-                                            } else {
-                                                respond { content = "Only the uploader can use this menu." }
-                                            }
-                                        }
-                                    }
+														actionRow(fun ActionRowBuilder.() {
+															linkButton(response) {
+																label = "Click here to view"
+															}
+														})
+													}
+												} catch (e: IOException) {
+													// If the upload fails, we'll just show the error
+													uploadMessage.edit {
+														embed {
+															title =
+																"Failed to upload `$attachmentFileName` to mclo.gs"
+															description = "Error: $e"
+															footer {
+																text =
+																	"Uploaded by ${eventMessage.author?.username ?: eventMember.asUserOrNull().username}"
+															}
+															timestamp = Clock.System.now()
+															color = DISCORD_RED
+														}
+													}
+													e.printStackTrace()
+												}
+											} else {
+												respond { content = "Only the uploader can use this menu." }
+											}
+										}
+									}
 
-                                    ephemeralButton(row = 0) {
-                                        label = "No"
-                                        style = ButtonStyle.Danger
+									ephemeralButton(row = 0) {
+										label = "No"
+										style = ButtonStyle.Danger
 
-                                        action {
-                                            if (event.interaction.user.id == eventMember!!.id) {
-                                                confirmationMessage!!.delete()
-                                            } else {
-                                                respond { content = "Only the uploader can use this menu." }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        publicSlashCommand {
-            name = "log-whitelist"
-            description = "Commands related to the log-uploading whitelist"
-            ephemeralSubCommand(::BWList) {
-                name = "add"
-                description = "Add a channel to the log-uploading whitelist"
-                check {
-                    anyGuild()
-                    hasPermission(Permission.ManageChannels)
-                }
-                action {
-                    if (LogUploadingCollection().checkIfChannelIsInWhitelist(guild!!.id, arguments.channel.id)) {
-                        respond { content = "Channel already in whitelist!" }
-                        return@action
-                    }
-                    LogUploadingCollection().addChannelToWhitelist(guild!!.id, arguments.channel.id)
-                    respond { content = "Channel added to Whitelist" }
-                }
-            }
-            ephemeralSubCommand(::BWList) {
-                name = "remove"
-                description = "Remove a channel to the log-uploading whitelist"
-                check {
-                    anyGuild()
-                    hasPermission(Permission.ManageChannels)
-                }
-                action {
-                    if (LogUploadingCollection().checkIfChannelIsInWhitelist(guild!!.id, arguments.channel.id)) {
-                        LogUploadingCollection().removeChannelFromWhitelist(guild!!.id, arguments.channel.id)
-                        respond { content = "Channel removed from Whitelist" }
-                        return@action
-                    } else {
-                        respond { content = "Channel is not in the Whitelist" }
-                    }
-                }
-            }
-            ephemeralSubCommand {
-                name = "list"
-                description = "List all channels that are in the whitelist"
-                check {
-                    anyGuild()
-                    hasPermission(Permission.ManageChannels)
-                }
-                action {
-                    val list = LogUploadingCollection().getWhitelist(this.guild!!.id)
-                    respond {
-                        embed {
-                            var channelsList = ""
-                            title = "Log Uploading Whitelist"
-                            if (list != null) {
-                                for (channel in list) {
-                                    channelsList += "<#$channel>\n"
-                                }
-                            }
-                            description = channelsList
-                        }
-                    }
-                }
-            }
-        }
-        publicSlashCommand {
-            name = "log-blacklist"
-            description = "Commands related to the log-uploading blacklist"
-            ephemeralSubCommand(::BWList) {
-                name = "add"
-                description = "Add a channel to the log-uploading blacklist"
-                check {
-                    anyGuild()
-                    hasPermission(Permission.ManageChannels)
-                }
-                action {
-                    if (LogUploadingCollection().checkIfChannelIsInBlacklist(guild!!.id, arguments.channel.id)) {
-                        respond { content = "Channel already in blacklist!" }
-                        return@action
-                    }
-                    LogUploadingCollection().addChannelToBlacklist(guild!!.id, arguments.channel.id)
-                    respond { content = "Channel added to blacklist" }
-                }
-            }
-            ephemeralSubCommand(::BWList) {
-                name = "remove"
-                description = "Remove a channel to the log-uploading blacklist"
-                check {
-                    anyGuild()
-                    hasPermission(Permission.ManageChannels)
-                }
-                action {
-                    if (LogUploadingCollection().checkIfChannelIsInBlacklist(guild!!.id, arguments.channel.id)) {
-                        LogUploadingCollection().removeChannelFromBlacklist(guild!!.id, arguments.channel.id)
-                        respond { content = "Channel removed from blacklist" }
-                        return@action
-                    } else {
-                        respond { content = "Channel is not in the blacklist" }
-                    }
-                }
-            }
-            ephemeralSubCommand {
-                name = "list"
-                description = "List all channels that are in the blacklist"
-                check {
-                    anyGuild()
-                    hasPermission(Permission.ManageChannels)
-                }
-                action {
-                    val list = LogUploadingCollection().getBlacklist(this.guild!!.id)
-                    respond {
-                        embed {
-                            var channelsList = ""
-                            title = "Log Uploading Blacklist"
-                            if (list != null) {
-                                for (channel in list) {
-                                    channelsList += "<#$channel>\n"
-                                }
-                            }
-                            description = channelsList
-                        }
-                    }
-                }
-            }
-        }
-    }
+										action {
+											if (event.interaction.user.id == eventMember!!.id) {
+												confirmationMessage!!.delete()
+											} else {
+												respond { content = "Only the uploader can use this menu." }
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		publicSlashCommand {
+			name = "log-whitelist"
+			description = "Commands related to the log-uploading whitelist"
+			ephemeralSubCommand(::BWList) {
+				name = "add"
+				description = "Add a channel to the log-uploading whitelist"
+				check {
+					anyGuild()
+					hasPermission(Permission.ManageChannels)
+				}
+				action {
+					if (LogUploadingCollection().checkIfChannelIsInWhitelist(guild!!.id, arguments.channel.id)) {
+						respond { content = "Channel already in whitelist!" }
+						return@action
+					}
+					LogUploadingCollection().addChannelToWhitelist(guild!!.id, arguments.channel.id)
+					respond { content = "Channel added to Whitelist" }
+				}
+			}
+			ephemeralSubCommand(::BWList) {
+				name = "remove"
+				description = "Remove a channel to the log-uploading whitelist"
+				check {
+					anyGuild()
+					hasPermission(Permission.ManageChannels)
+				}
+				action {
+					if (LogUploadingCollection().checkIfChannelIsInWhitelist(guild!!.id, arguments.channel.id)) {
+						LogUploadingCollection().removeChannelFromWhitelist(guild!!.id, arguments.channel.id)
+						respond { content = "Channel removed from Whitelist" }
+						return@action
+					} else {
+						respond { content = "Channel is not in the Whitelist" }
+					}
+				}
+			}
+			ephemeralSubCommand {
+				name = "list"
+				description = "List all channels that are in the whitelist"
+				check {
+					anyGuild()
+					hasPermission(Permission.ManageChannels)
+				}
+				action {
+					val list = LogUploadingCollection().getWhitelist(this.guild!!.id)
+					respond {
+						embed {
+							var channelsList = ""
+							title = "Log Uploading Whitelist"
+							if (list != null) {
+								for (channel in list) {
+									channelsList += "<#$channel>\n"
+								}
+							}
+							description = channelsList
+						}
+					}
+				}
+			}
+		}
+		publicSlashCommand {
+			name = "log-blacklist"
+			description = "Commands related to the log-uploading blacklist"
+			ephemeralSubCommand(::BWList) {
+				name = "add"
+				description = "Add a channel to the log-uploading blacklist"
+				check {
+					anyGuild()
+					hasPermission(Permission.ManageChannels)
+				}
+				action {
+					if (LogUploadingCollection().checkIfChannelIsInBlacklist(guild!!.id, arguments.channel.id)) {
+						respond { content = "Channel already in blacklist!" }
+						return@action
+					}
+					LogUploadingCollection().addChannelToBlacklist(guild!!.id, arguments.channel.id)
+					respond { content = "Channel added to blacklist" }
+				}
+			}
+			ephemeralSubCommand(::BWList) {
+				name = "remove"
+				description = "Remove a channel to the log-uploading blacklist"
+				check {
+					anyGuild()
+					hasPermission(Permission.ManageChannels)
+				}
+				action {
+					if (LogUploadingCollection().checkIfChannelIsInBlacklist(guild!!.id, arguments.channel.id)) {
+						LogUploadingCollection().removeChannelFromBlacklist(guild!!.id, arguments.channel.id)
+						respond { content = "Channel removed from blacklist" }
+						return@action
+					} else {
+						respond { content = "Channel is not in the blacklist" }
+					}
+				}
+			}
+			ephemeralSubCommand {
+				name = "list"
+				description = "List all channels that are in the blacklist"
+				check {
+					anyGuild()
+					hasPermission(Permission.ManageChannels)
+				}
+				action {
+					val list = LogUploadingCollection().getBlacklist(this.guild!!.id)
+					respond {
+						embed {
+							var channelsList = ""
+							title = "Log Uploading Blacklist"
+							if (list != null) {
+								for (channel in list) {
+									channelsList += "<#$channel>\n"
+								}
+							}
+							description = channelsList
+						}
+					}
+				}
+			}
+		}
+	}
 
-    inner class BWList : Arguments() {
-        val channel by channel {
-            name = "channel"
-            description = "Channel to add to the Whitelist"
-        }
-    }
+	inner class BWList : Arguments() {
+		val channel by channel {
+			name = "channel"
+			description = "Channel to add to the Whitelist"
+		}
+	}
 
-    @Serializable
-    data class LogData(val success: Boolean, val id: String? = null, val error: String? = null)
+	@Serializable
+	data class LogData(val success: Boolean, val id: String? = null, val error: String? = null)
 
-    private suspend fun postToMCLogs(text: String): String {
-        val client = HttpClient {
-            install(UserAgent) {
-                agent = "hyacinthbots/allium/$BUILD (contact@jansel.moe)"
-            }
-        }
-        val cleanText = text.replace("\r\n", "\n", true).replace("\r", "\n", true)
-        val response = client.post("https://api.mclo.gs/1/log") {
-            setBody(
-                    FormDataContent(
-                            Parameters.build {
-                                append("content", cleanText)
-                            }
-                    )
-            )
-        }.readBytes().decodeToString()
-        client.close()
-        val json = Json { ignoreUnknownKeys = true } // to avoid causing any errors due to missing values in the JSON
-        val log = json.decodeFromString<LogData>(response)
-        if (log.success) {
-            return "https://mclo.gs/" + log.id
-        } else {
-            throw IOException("Failed to upload log: " + log.error)
-        }
-    }
+	private suspend fun postToMCLogs(text: String): String {
+		val client = HttpClient {
+			install(UserAgent) {
+				agent = "hyacinthbots/allium/$BUILD (contact@jansel.moe)"
+			}
+		}
+		val cleanText = text.replace("\r\n", "\n", true).replace("\r", "\n", true)
+		val response = client.post("https://api.mclo.gs/1/log") {
+			setBody(
+				FormDataContent(
+					Parameters.build {
+						append("content", cleanText)
+					}
+				)
+			)
+		}.readBytes().decodeToString()
+		client.close()
+		val json = Json { ignoreUnknownKeys = true } // to avoid causing any errors due to missing values in the JSON
+		val log = json.decodeFromString<LogData>(response)
+		if (log.success) {
+			return "https://mclo.gs/" + log.id
+		} else {
+			throw IOException("Failed to upload log: " + log.error)
+		}
+	}
 }
