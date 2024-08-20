@@ -103,5 +103,6 @@ build/
 .kotlin
 .linkie-cache
 
+assets/
 config/
 data/
