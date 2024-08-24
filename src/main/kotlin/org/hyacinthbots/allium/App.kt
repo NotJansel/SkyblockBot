@@ -6,7 +6,6 @@ import dev.kord.core.Kord
 import dev.kord.gateway.Intent
 import dev.kord.gateway.PrivilegedIntent
 import dev.kordex.core.ExtensibleBot
-import dev.kordex.core.utils.getKoin
 import dev.kordex.modules.func.mappings.extMappings
 import kotlinx.coroutines.flow.count
 import org.hyacinthbots.allium.extensions.*

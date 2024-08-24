@@ -17,6 +17,7 @@ import dev.kordex.core.DISCORD_RED
 import dev.kordex.core.checks.anyGuild
 import dev.kordex.core.checks.channelFor
 import dev.kordex.core.checks.hasPermission
+import dev.kordex.core.checks.or
 import dev.kordex.core.commands.Arguments
 import dev.kordex.core.commands.application.slash.ephemeralSubCommand
 import dev.kordex.core.commands.converters.impl.channel
@@ -203,13 +204,12 @@ class LogUploading : Extension() {
 									ephemeralButton(row = 0) {
 										label = "No"
 										style = ButtonStyle.Danger
-
+										check {
+											failIfNot(event.interaction.user.id == eventMember!!.id, "Only the Uploader can use this Menu.")
+											or { hasPermission(Permission.ManageGuild) }
+										}
 										action {
-											if (event.interaction.user.id == eventMember!!.id) {
-												confirmationMessage!!.delete()
-											} else {
-												respond { content = "Only the uploader can use this menu." }
-											}
+											confirmationMessage!!.delete()
 										}
 									}
 								}

@@ -23,7 +23,7 @@ val MONGO_URI = envOrNull("MONGO_URI") ?: "mongodb://localhost:27017"
 /** Get the CurseForge API Key. */
 val CURSEFORGE_API_KEY = env("CURSEFORGE_API_KEY")
 
-/** Get the build revision. */
+/** Get some Build Information. */
 var BUILD = BuildInfo.BUILD
 
 val ENVIRONMENT = env("ENVIRONMENT")
