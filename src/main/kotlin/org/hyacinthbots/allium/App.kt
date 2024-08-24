@@ -13,15 +13,10 @@ import kotlinx.coroutines.flow.count
 import org.hyacinthbots.allium.extensions.*
 import org.hyacinthbots.allium.utils.BUILD
 import org.hyacinthbots.allium.utils.BUILDTIME
-import org.hyacinthbots.allium.utils.ENVIRONMENT
 import org.hyacinthbots.allium.utils.TOKEN
 import org.hyacinthbots.allium.utils.database
 import org.hyacinthbots.allium.utils.getRandomUpdateMessage
-import org.hyacinthbots.docgenerator.docsGenerator
-import org.hyacinthbots.docgenerator.enums.CommandTypes
-import org.hyacinthbots.docgenerator.enums.SupportedFileFormat
 import java.util.*
-import kotlin.io.path.Path
 
 var updatemessages = JsonArray()
 
@@ -109,6 +104,7 @@ suspend fun main() {
 		i18n {
 			defaultLocale = Locale.ENGLISH
 		}
+		/*
 		docsGenerator {
 			enabled = true
 			fileFormat = SupportedFileFormat.MARKDOWN
@@ -118,6 +114,7 @@ suspend fun main() {
 			commandTypes = CommandTypes.ALL
 			botName = "Allium"
 		}
+		 */
 	}
 	bot.start()
 }
