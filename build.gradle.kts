@@ -40,9 +40,9 @@ group = "org.hyacinthbots.allium"
 version = if ("git branch --show-current"
 		.runCommand(workingDir = rootDir)
 		.replace("/", ".") == "root") {
-	"0.7"
+	"1.0.0"
 		} else {
-	"0.7-build.local-" +
+	"1.0.1-build.local-" +
 		"git rev-parse --short=8 HEAD"
 			.runCommand(workingDir = rootDir) +
 		"-" +
