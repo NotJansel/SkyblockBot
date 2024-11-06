@@ -35,7 +35,7 @@ class Config : Extension() {
 			}
 			publicSubCommand {
 				name = "get"
-				description = "Set the Config"
+				description = "Get the Config"
 				check {
 					anyGuild()
 					hasPermission(Permission.ManageGuild)
